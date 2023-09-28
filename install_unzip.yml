@@ -1,0 +1,16 @@
+---
+- name: Install Unzip
+  hosts: localhost
+  become: true 
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Unzip
+      apt:
+        name: unzip
+        state: present

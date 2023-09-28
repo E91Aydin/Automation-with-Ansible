@@ -1,0 +1,8 @@
+---
+- name: Configure Server
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Set Timezone to Europe/Berlin
+      timezone:
+        name: Europe/Berlin

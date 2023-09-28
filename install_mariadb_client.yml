@@ -1,0 +1,45 @@
+---
+- name: Install MariaDB and save version
+  hosts: localhost
+  become: true
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Install wget package
+      apt:
+        name: wget
+        state: present
+
+    - name: Download mariadb_repo_setup script
+      shell: |
+        wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+        echo "935944a2ab2b2a48a47f68711b43ad2d698c97f1c3a7d074b34058060c2ad21b mariadb_repo_setup" | sha256sum -c -
+        chmod +x mariadb_repo_setup
+      args:
+        chdir: /tmp
+
+    - name: Run mariadb_repo_setup script
+      shell: ./mariadb_repo_setup --mariadb-server-version="mariadb-10.6"
+      args:
+        chdir: /tmp
+
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install MariaDB client package
+      apt:
+        name: mariadb-client
+        state: present
+
+    - name: Get MariaDB version
+      shell: mariadb --version | awk '{print $5}' | cut -d'-' -f1 > /tmp/mariadb_version.txt
+      args:
+        chdir: /tmp
+
+    - name: Transfer version file to control machine
+      fetch:
+        src: /tmp/mariadb_version.txt
+        dest: ./mariadb_version.txt
+        flat: yes

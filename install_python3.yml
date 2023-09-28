@@ -1,0 +1,38 @@
+---
+- name: Install Python 3 and boto3
+  hosts: localhost
+  become: yes  
+  gather_facts: no
+
+  tasks:
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Python 3
+      apt:
+        name: python3
+        state: present
+
+    - name: Install pip for Python 3
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Install boto3 using pip
+      pip:
+        name: boto3
+        executable: pip3
+
+    - name: Store version and update date
+      shell: |
+        echo "Python 3 version: $(python3 --version)"
+        echo "Boto3 version: $(pip3 show boto3 | grep Version | awk '{print $2}')"
+        echo "Updated on: $(date)"
+      changed_when: false
+      register: version_output
+
+    - name: Save version and update date to file
+      copy:
+        content: "{{ version_output.stdout }}"
+        dest: /home/ubuntu/ansible/results.txt

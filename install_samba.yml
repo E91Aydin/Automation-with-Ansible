@@ -1,0 +1,24 @@
+---
+- name: Install Samba
+  hosts: localhost
+  become: true
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Samba
+      apt:
+        name: samba
+        state: present
+        #it is different than python3, let's show differences
+    - name: Check Samba version
+      command: samba --version
+      register: samba_version_output
+
+    - name: Print Samba version
+      debug:
+        var: samba_version_output.stdout_lines

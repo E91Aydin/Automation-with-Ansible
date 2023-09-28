@@ -1,0 +1,19 @@
+---
+- name: Install JAVA 8 JRE
+  hosts: localhost
+  become: true
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+
+    - name: Update package list
+      apt:
+        update_cache: yes
+      
+    - name: Install OpenJDK 8 JRE HEADLESS
+      apt:
+        name: openjdk-8-jre-headless
+        state: present
+        update_cache: yes
